@@ -1,0 +1,5 @@
+lake_dynamics_sylius_monetico_admin:
+    resource: "@LakeDynamicsSyliusMoneticoPlugin/config/routes/admin.yaml"
+
+lake_dynamics_sylius_monetico_shop:
+    resource: "@LakeDynamicsSyliusMoneticoPlugin/config/routes/shop.yaml"

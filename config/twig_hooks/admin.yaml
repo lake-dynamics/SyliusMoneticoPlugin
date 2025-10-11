@@ -1,0 +1,28 @@
+sylius_twig_hooks:
+    hooks:
+        'sylius_admin.payment_method.create.content.form.sections.gateway_configuration.monetico':
+            tpe:
+                template: '@LakeDynamicsSyliusMoneticoPlugin/admin/payment_method/form/tpe.html.twig'
+                priority: 10
+            company_id:
+                template: '@LakeDynamicsSyliusMoneticoPlugin/admin/payment_method/form/company_id.html.twig'
+                priority: 9
+            prod_key:
+                template: '@LakeDynamicsSyliusMoneticoPlugin/admin/payment_method/form/prod_key.html.twig'
+                priority: 8
+            use_production:
+                template: '@LakeDynamicsSyliusMoneticoPlugin/admin/payment_method/form/use_production.html.twig'
+                priority: 7
+        'sylius_admin.payment_method.update.content.form.sections.gateway_configuration.monetico':
+            tpe:
+                template: '@LakeDynamicsSyliusMoneticoPlugin/admin/payment_method/form/tpe.html.twig'
+                priority: 10
+            company_id:
+                template: '@LakeDynamicsSyliusMoneticoPlugin/admin/payment_method/form/company_id.html.twig'
+                priority: 9
+            prod_key:
+                template: '@LakeDynamicsSyliusMoneticoPlugin/admin/payment_method/form/prod_key.html.twig'
+                priority: 8
+            use_production:
+                template: '@LakeDynamicsSyliusMoneticoPlugin/admin/payment_method/form/use_production.html.twig'
+                priority: 7

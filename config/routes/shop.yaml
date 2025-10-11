@@ -1,0 +1,7 @@
+# Define your own shop routes here
+
+lake_dynamics_sylius_monetico_notify:
+    path: /payment/monetico/notify/{hash}
+    methods: [GET, POST]
+    defaults:
+        _controller: LakeDynamics\SyliusMoneticoPlugin\Controller\NotifyController

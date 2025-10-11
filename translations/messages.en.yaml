@@ -1,0 +1,19 @@
+lake_dynamics_sylius_monetico:
+    gateway:
+        name: 'Monetico Payment Gateway'
+
+    form:
+        gateway_configuration:
+            tpe: 'TPE (Terminal Payment Electronic)'
+            tpe.not_blank: 'Please enter the TPE number.'
+            company_id: 'Company ID (Société)'
+            company_id.not_blank: 'Please enter the company ID.'
+            prod_key: 'Production Key'
+            prod_key.not_blank: 'Please enter the production key.'
+            use_production: 'Use Production Environment'
+
+    payment:
+        redirect:
+            title: 'Redirecting to Monetico Payment'
+            processing: 'Processing Payment'
+            please_wait: 'Please wait while we redirect you to the secure payment page...'

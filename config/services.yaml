@@ -1,0 +1,64 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # Form Type
+    LakeDynamics\SyliusMoneticoPlugin\Form\Type\MoneticoGatewayConfigurationType:
+        tags:
+            - { name: sylius.gateway_configuration_type, type: monetico, label: 'lake_dynamics_sylius_monetico.gateway.name' }
+            - { name: form.type }
+
+    # Core Service
+    LakeDynamics\SyliusMoneticoPlugin\Service\MoneticoService: ~
+
+    # Command Providers - Actions Gateway Provider
+    lake_dynamics.sylius_monetico.command_provider.monetico:
+        class: Sylius\Bundle\PaymentBundle\CommandProvider\ActionsCommandProvider
+        arguments:
+            - !tagged_locator
+                tag: lake_dynamics.sylius_monetico.command_provider.monetico
+                index_by: action
+        tags:
+            - { name: sylius.payment_request.command_provider, gateway_factory: 'monetico' }
+
+    # Capture Command Provider
+    LakeDynamics\SyliusMoneticoPlugin\CommandProvider\CapturePaymentRequestCommandProvider:
+        tags:
+            - { name: lake_dynamics.sylius_monetico.command_provider.monetico, action: !php/const Sylius\Component\Payment\Model\PaymentRequestInterface::ACTION_CAPTURE }
+
+    # Notify Command Provider
+    LakeDynamics\SyliusMoneticoPlugin\CommandProvider\NotifyPaymentRequestCommandProvider:
+        tags:
+            - { name: lake_dynamics.sylius_monetico.command_provider.monetico, action: 'notify' }
+
+    # Command Handlers (auto-registered via #[AsMessageHandler])
+    LakeDynamics\SyliusMoneticoPlugin\CommandHandler\:
+        resource: '../src/CommandHandler/*'
+
+    # HTTP Response Providers - Actions Response Provider
+    lake_dynamics.sylius_monetico.provider.http_response.monetico:
+        class: Sylius\Bundle\PaymentBundle\Provider\ActionsHttpResponseProvider
+        arguments:
+            - !tagged_locator
+                tag: lake_dynamics.sylius_monetico.provider.http_response.monetico
+                index_by: action
+        tags:
+            - { name: sylius.payment_request.provider.http_response, gateway_factory: 'monetico' }
+
+    # Capture HTTP Response Provider
+    LakeDynamics\SyliusMoneticoPlugin\Provider\CaptureHttpResponseProvider:
+        tags:
+            - { name: lake_dynamics.sylius_monetico.provider.http_response.monetico, action: !php/const Sylius\Component\Payment\Model\PaymentRequestInterface::ACTION_CAPTURE }
+
+    # Notify HTTP Response Provider
+    LakeDynamics\SyliusMoneticoPlugin\Provider\NotifyHttpResponseProvider:
+        tags:
+            - { name: lake_dynamics.sylius_monetico.provider.http_response.monetico, action: 'notify' }
+
+    # Controller
+    LakeDynamics\SyliusMoneticoPlugin\Controller\NotifyController:
+        public: true
+        arguments:
+            $paymentRequestRepository: '@sylius.repository.payment_request'
+            $messageBus: '@messenger.default_bus'

@@ -1,0 +1,19 @@
+lake_dynamics_sylius_monetico:
+    gateway:
+        name: 'Passerelle de paiement Monetico'
+
+    form:
+        gateway_configuration:
+            tpe: 'TPE (Terminal de Paiement Électronique)'
+            tpe.not_blank: 'Veuillez saisir le numéro TPE.'
+            company_id: 'Identifiant Société'
+            company_id.not_blank: 'Veuillez saisir l''identifiant société.'
+            prod_key: 'Clé de production'
+            prod_key.not_blank: 'Veuillez saisir la clé de production.'
+            use_production: 'Utiliser l''environnement de production'
+
+    payment:
+        redirect:
+            title: 'Redirection vers le paiement Monetico'
+            processing: 'Traitement du paiement'
+            please_wait: 'Veuillez patienter pendant que nous vous redirigeons vers la page de paiement sécurisée...'
