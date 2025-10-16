@@ -46,14 +46,8 @@ final readonly class CapturePaymentRequestHandler
             throw new \RuntimeException('Payment has no order');
         }
 
-        $successUrl = $this->urlGenerator->generate(
-            'lake_dynamics_sylius_monetico_notify',
-            ['hash' => $paymentRequest->getHash()],
-            UrlGeneratorInterface::ABSOLUTE_URL,
-        );
-
-        $errorUrl = $this->urlGenerator->generate(
-            'lake_dynamics_sylius_monetico_notify',
+        $unifiedReturnUrl = $this->urlGenerator->generate(
+            'sylius_shop_order_after_pay',
             ['hash' => $paymentRequest->getHash()],
             UrlGeneratorInterface::ABSOLUTE_URL,
         );
@@ -62,8 +56,8 @@ final readonly class CapturePaymentRequestHandler
         $paymentFields = $this->moneticoService->preparePaymentFields(
             $payment,
             $gatewayConfig,
-            $successUrl,
-            $errorUrl,
+            $unifiedReturnUrl,
+            $unifiedReturnUrl,
         );
 
         // Store payment data in PaymentRequest response data
