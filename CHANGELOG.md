@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-10-16
+
+### Added
+- Status payment request command provider to support payment status checks on "after pay" page
+- StatusPaymentRequest command for handling status requests
+- StatusPaymentRequestHandler for processing status checks
+- StatusPaymentRequestCommandProvider for status action support
+- StatusHttpResponseProvider to redirect users to thank you page after payment
+
+### Fixed
+- Fixed "No payment request command provider supported for 'status'" error when accessing after pay page
+- Improved exception handling in NotifyController by using RuntimeException instead of NotFoundException for invalid data
+
 ## [1.1.0] - 2025-10-16
 
 ### Added
@@ -34,5 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code quality tools (PHPStan, ECS)
 - Comprehensive documentation and development guides
 
+[1.1.1]: https://github.com/lakedynamics/sylius-monetico-plugin/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/lakedynamics/sylius-monetico-plugin/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/lakedynamics/sylius-monetico-plugin/releases/tag/v1.0.0

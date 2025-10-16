@@ -31,12 +31,12 @@ final class NotifyController extends AbstractController
             : $request->query->get('texte-libre');
 
         if (null === $texteLibre) {
-            throw $this->createNotFoundException('Missing texte-libre parameter');
+            throw new \RuntimeException('Missing texte-libre parameter');
         }
 
         $decodedData = json_decode(base64_decode((string) $texteLibre), true);
         if (!is_array($decodedData) || !isset($decodedData['hash'])) {
-            throw $this->createNotFoundException('Invalid texte-libre format or missing hash');
+            throw new \RuntimeException('Invalid texte-libre format or missing hash');
         }
 
         $hash = $decodedData['hash'];
@@ -45,7 +45,7 @@ final class NotifyController extends AbstractController
         $paymentRequest = $this->paymentRequestRepository->findOneBy(['hash' => $hash]);
 
         if (null === $paymentRequest) {
-            throw $this->createNotFoundException('Payment request not found');
+            throw new \RuntimeException('Payment request not found');
         }
 
         // Dispatch the notification command

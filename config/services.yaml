@@ -32,6 +32,11 @@ services:
         tags:
             - { name: lake_dynamics.sylius_monetico.command_provider.monetico, action: 'notify' }
 
+    # Status Command Provider
+    LakeDynamics\SyliusMoneticoPlugin\CommandProvider\StatusPaymentRequestCommandProvider:
+        tags:
+            - { name: lake_dynamics.sylius_monetico.command_provider.monetico, action: !php/const Sylius\Component\Payment\Model\PaymentRequestInterface::ACTION_STATUS }
+
     # Command Handlers (auto-registered via #[AsMessageHandler])
     LakeDynamics\SyliusMoneticoPlugin\CommandHandler\:
         resource: '../src/CommandHandler/*'
@@ -55,6 +60,11 @@ services:
     LakeDynamics\SyliusMoneticoPlugin\Provider\NotifyHttpResponseProvider:
         tags:
             - { name: lake_dynamics.sylius_monetico.provider.http_response.monetico, action: 'notify' }
+
+    # Status HTTP Response Provider
+    LakeDynamics\SyliusMoneticoPlugin\Provider\StatusHttpResponseProvider:
+        tags:
+            - { name: lake_dynamics.sylius_monetico.provider.http_response.monetico, action: !php/const Sylius\Component\Payment\Model\PaymentRequestInterface::ACTION_STATUS }
 
     # Controller
     LakeDynamics\SyliusMoneticoPlugin\Controller\NotifyController:
