@@ -119,7 +119,7 @@ You'll receive the following credentials from Monetico:
 - reference: Unique payment reference
 - date: Payment date in GMT
 - MAC: HMAC SHA1 signature
-- texte-libre: Base64-encoded payment metadata (order ID, payment ID)
+- texte-libre: Base64-encoded payment metadata (order ID, payment ID, payment request hash)
 - contexte_commande: Base64-encoded customer and billing data
 - url_retour_ok: Success return URL
 - url_retour_err: Error return URL
@@ -193,9 +193,9 @@ make ecs
 
 **Solution**:
 1. Ensure your server is accessible from external networks
-2. Verify URL in admin matches: `https://yourdomain.com/payment/monetico/notify/{hash}`
+2. Verify URL in admin matches: `https://yourdomain.com/payment/monetico/notify`
 3. Check firewall rules allow Monetico IPs
-4. Test notification URL manually with a valid hash
+4. Configure this URL in your Monetico backend for server-to-server notifications
 
 ### Production vs Sandbox
 

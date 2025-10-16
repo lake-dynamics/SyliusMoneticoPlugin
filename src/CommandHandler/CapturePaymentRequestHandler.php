@@ -53,11 +53,17 @@ final readonly class CapturePaymentRequestHandler
         );
 
         // Prepare payment fields
+        $hash = $paymentRequest->getHash();
+        if (null === $hash) {
+            throw new \RuntimeException('PaymentRequest has no hash');
+        }
+
         $paymentFields = $this->moneticoService->preparePaymentFields(
             $payment,
             $gatewayConfig,
             $unifiedReturnUrl,
             $unifiedReturnUrl,
+            $hash->toRfc4122(),
         );
 
         // Store payment data in PaymentRequest response data

@@ -90,6 +90,15 @@ This is the **LakeDynamics Sylius Monetico Plugin** - a Sylius plugin for integr
 - **Routes**: `config/routes/` - Separate admin and shop route definitions
 - **Templates**: `templates/` - Twig templates for admin and shop with Twig hooks support
 
+### Payment Flow
+- **Capture**: `CapturePaymentRequestHandler` prepares payment fields with `MoneticoService`
+- **PaymentRequest Hash**: Hash is stored in Monetico's `texte-libre` field (base64-encoded JSON)
+- **IPN Notification**: `NotifyController` receives server-to-server callback at `/payment/monetico/notify`
+  - Extracts hash from `texte-libre` parameter (not from URL)
+  - Validates MAC signature
+  - Dispatches `NotifyPaymentRequest` command
+- **User Return**: Separate unified return URL (`sylius_shop_order_after_pay`) with hash in URL for showing messages
+
 ### Key Features
 - **Test Application**: Uses `sylius/test-application` for plugin testing in isolation
 - **Asset Management**: Webpack Encore for frontend asset compilation

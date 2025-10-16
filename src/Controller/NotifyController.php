@@ -23,8 +23,24 @@ final class NotifyController extends AbstractController
     ) {
     }
 
-    public function __invoke(Request $request, string $hash): Response
+    public function __invoke(Request $request): Response
     {
+        // Extract hash from Monetico's texte-libre field
+        $texteLibre = $request->isMethod('POST')
+            ? $request->request->get('texte-libre')
+            : $request->query->get('texte-libre');
+
+        if (null === $texteLibre) {
+            throw $this->createNotFoundException('Missing texte-libre parameter');
+        }
+
+        $decodedData = json_decode(base64_decode((string) $texteLibre), true);
+        if (!is_array($decodedData) || !isset($decodedData['hash'])) {
+            throw $this->createNotFoundException('Invalid texte-libre format or missing hash');
+        }
+
+        $hash = $decodedData['hash'];
+
         /** @var PaymentRequestInterface|null $paymentRequest */
         $paymentRequest = $this->paymentRequestRepository->findOneBy(['hash' => $hash]);
 

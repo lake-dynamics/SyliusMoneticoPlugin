@@ -27,6 +27,7 @@ final class MoneticoService
         array $gatewayConfig,
         string $successUrl,
         string $errorUrl,
+        string $paymentRequestHash,
     ): array {
         $order = $payment->getOrder();
         if (null === $order) {
@@ -57,6 +58,7 @@ final class MoneticoService
             'texte-libre' => base64_encode((string) json_encode([
                 'payment_id' => $payment->getId(),
                 'order_id' => $order->getId(),
+                'hash' => $paymentRequestHash,
             ])),
             'contexte_commande' => base64_encode((string) json_encode([
                 'billing' => [
