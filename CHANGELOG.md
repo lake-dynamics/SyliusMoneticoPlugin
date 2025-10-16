@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2025-10-16
+
+### Fixed
+- **CRITICAL**: Fixed Payment entity state not being updated when payment notifications are received
+- NotifyPaymentRequestHandler now applies transitions to both PaymentRequest AND Payment entities
+- Orders are now correctly marked as paid when Monetico sends successful payment notifications
+
+### Technical Details
+- Added PaymentTransitions to update the Payment entity state alongside PaymentRequest state
+- Payment state transitions (complete/fail) are now applied based on Monetico notification status
+- This triggers Sylius's order payment state resolution to properly update order status
+
 ## [1.1.2] - 2025-10-16
 
 ### Fixed
@@ -60,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code quality tools (PHPStan, ECS)
 - Comprehensive documentation and development guides
 
+[1.1.3]: https://github.com/lakedynamics/sylius-monetico-plugin/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/lakedynamics/sylius-monetico-plugin/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/lakedynamics/sylius-monetico-plugin/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/lakedynamics/sylius-monetico-plugin/compare/v1.0.0...v1.1.0
