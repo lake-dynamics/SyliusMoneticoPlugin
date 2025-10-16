@@ -11,7 +11,20 @@ final class NotifyPaymentRequest implements PaymentRequestHashAwareInterface
 {
     use PaymentRequestHashAwareTrait;
 
-    public function __construct(protected ?string $hash)
+    /**
+     * @param array<string, mixed> $notificationData
+     */
+    public function __construct(
+        protected ?string $hash,
+        private readonly array $notificationData = [],
+    ) {
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getNotificationData(): array
     {
+        return $this->notificationData;
     }
 }

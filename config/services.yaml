@@ -71,4 +71,5 @@ services:
         public: true
         arguments:
             $paymentRequestRepository: '@sylius.repository.payment_request'
-            $messageBus: '@messenger.default_bus'
+            $messageBus: '@sylius.command_bus'
+            $moneticoService: '@LakeDynamics\SyliusMoneticoPlugin\Service\MoneticoService'

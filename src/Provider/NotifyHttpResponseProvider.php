@@ -19,6 +19,9 @@ final readonly class NotifyHttpResponseProvider implements HttpResponseProviderI
     public function getResponse(RequestConfiguration $requestConfiguration, PaymentRequestInterface $paymentRequest): Response
     {
         // Monetico expects "version=2" response
-        return new Response('version=2', Response::HTTP_OK);
+        $response = (new Response())->setContent("version=2\ncdr=0\n");
+        $response->headers->add(['Content-Type' => 'text/plain']);
+
+        return $response;
     }
 }
