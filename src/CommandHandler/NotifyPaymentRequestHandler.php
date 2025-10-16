@@ -29,10 +29,16 @@ final readonly class NotifyPaymentRequestHandler
     {
         $paymentRequest = $this->paymentRequestProvider->provide($notifyPaymentRequest);
 
+        // Get the associated payment
+        $payment = $paymentRequest->getPayment();
+        if (!$payment instanceof PaymentInterface) {
+            throw new \RuntimeException('PaymentRequest has no valid payment');
+        }
+
         // Get notification data from the command (already validated by the controller)
         $data = $notifyPaymentRequest->getNotificationData();
-
         $status = $data['code-retour'] ?? '';
+        $isValid = $this->moneticoService->isValidStatus($status);
 
         // Store notification data in response
         $paymentRequest->setResponseData([
@@ -41,17 +47,6 @@ final readonly class NotifyPaymentRequestHandler
             'motif_refus' => $data['motifrefus'] ?? null,
         ]);
 
-        $this->entityManager->flush();
-
-        // Get the associated payment
-        $payment = $paymentRequest->getPayment();
-        if (!$payment instanceof PaymentInterface) {
-            throw new \RuntimeException('PaymentRequest has no valid payment');
-        }
-
-        // Determine if payment is valid
-        $isValid = $this->moneticoService->isValidStatus($status);
-
         // Update PaymentRequest state
         $this->stateMachine->apply(
             $paymentRequest,
@@ -59,12 +54,17 @@ final readonly class NotifyPaymentRequestHandler
             $isValid ? PaymentRequestTransitions::TRANSITION_COMPLETE : PaymentRequestTransitions::TRANSITION_FAIL,
         );
 
-        // CRITICAL: Also update the Payment entity state
-        // This is what actually marks the payment/order as paid in Sylius
+        // Update Payment entity state (this triggers Sylius workflow listeners)
+        // Workflow listeners will automatically:
+        // - Update Order payment state via ResolveOrderPaymentStateListener
+        // - Trigger other order-related state changes
         $this->stateMachine->apply(
             $payment,
             PaymentTransitions::GRAPH,
             $isValid ? PaymentTransitions::TRANSITION_COMPLETE : PaymentTransitions::TRANSITION_FAIL,
         );
+
+        // Flush all changes atomically (response data + state transitions)
+        $this->entityManager->flush();
     }
 }
