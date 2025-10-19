@@ -24,7 +24,17 @@ final readonly class CaptureHttpResponseProvider implements HttpResponseProvider
 
     public function getResponse(RequestConfiguration $requestConfiguration, PaymentRequestInterface $paymentRequest): Response
     {
-        $data = $paymentRequest->getPayload();
+        $payload = $paymentRequest->getPayload();
+
+        // Decode JSON payload if it's a string
+        if (is_string($payload)) {
+            $data = json_decode($payload, true);
+            if (null === $data) {
+                throw new \RuntimeException('Invalid JSON payload');
+            }
+        } else {
+            $data = $payload;
+        }
 
         if (!isset($data['payment_url']) || !isset($data['payment_fields'])) {
             throw new \RuntimeException('Payment data not prepared');
