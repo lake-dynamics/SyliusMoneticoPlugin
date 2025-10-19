@@ -26,37 +26,20 @@ final readonly class CaptureHttpResponseProvider implements HttpResponseProvider
     {
         $payload = $paymentRequest->getPayload();
 
-        // Decode JSON payload if it's a string
-        if (is_string($payload)) {
-            $data = json_decode($payload, true);
-            if (null === $data) {
-                throw new \RuntimeException(sprintf(
-                    'Invalid JSON payload: %s',
-                    json_last_error_msg()
-                ));
-            }
-        } elseif (is_array($payload)) {
-            $data = $payload;
-        } else {
-            throw new \RuntimeException(sprintf(
-                'Payload must be array or JSON string, got: %s',
-                get_debug_type($payload)
-            ));
+        if (!is_array($payload)) {
+            throw new \RuntimeException('Payment payload must be an array');
         }
 
-        if (!isset($data['payment_url']) || !isset($data['payment_fields'])) {
-            throw new \RuntimeException(sprintf(
-                'Payment data not prepared. Available keys: %s',
-                implode(', ', array_keys($data))
-            ));
+        if (!isset($payload['payment_url']) || !isset($payload['payment_fields'])) {
+            throw new \RuntimeException('Payment data not prepared');
         }
 
         return new Response(
             $this->twig->render(
                 '@LakeDynamicsSyliusMoneticoPlugin/payment/monetico_redirect.html.twig',
                 [
-                    'payment_url' => $data['payment_url'],
-                    'payment_fields' => $data['payment_fields'],
+                    'payment_url' => $payload['payment_url'],
+                    'payment_fields' => $payload['payment_fields'],
                 ],
             ),
         );
