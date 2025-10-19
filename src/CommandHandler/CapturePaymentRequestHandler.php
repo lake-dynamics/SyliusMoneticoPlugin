@@ -67,7 +67,7 @@ final readonly class CapturePaymentRequestHandler
         );
 
         // Store payment data in PaymentRequest response data
-        $paymentRequest->setResponseData([
+        $paymentRequest->setPayload([
             'payment_url' => $this->moneticoService->getPaymentUrl($gatewayConfig),
             'payment_fields' => $paymentFields,
         ]);

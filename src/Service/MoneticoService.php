@@ -101,6 +101,15 @@ final class MoneticoService
         return in_array($status, ['payetest', 'paiement'], true);
     }
 
+    public function isFailedStatus(string $status): bool
+    {
+        return in_array($status, ['annulation'], true);
+    }
+
+    public function isRefundedStatus(string $status): bool
+    {
+        return in_array($status, ['remboursement'], true);
+    }
     private function generateReference(PaymentInterface $payment): string
     {
         return strtoupper(sprintf(
