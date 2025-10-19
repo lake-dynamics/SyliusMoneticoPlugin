@@ -30,14 +30,25 @@ final readonly class CaptureHttpResponseProvider implements HttpResponseProvider
         if (is_string($payload)) {
             $data = json_decode($payload, true);
             if (null === $data) {
-                throw new \RuntimeException('Invalid JSON payload');
+                throw new \RuntimeException(sprintf(
+                    'Invalid JSON payload: %s',
+                    json_last_error_msg()
+                ));
             }
-        } else {
+        } elseif (is_array($payload)) {
             $data = $payload;
+        } else {
+            throw new \RuntimeException(sprintf(
+                'Payload must be array or JSON string, got: %s',
+                get_debug_type($payload)
+            ));
         }
 
         if (!isset($data['payment_url']) || !isset($data['payment_fields'])) {
-            throw new \RuntimeException('Payment data not prepared');
+            throw new \RuntimeException(sprintf(
+                'Payment data not prepared. Available keys: %s',
+                implode(', ', array_keys($data))
+            ));
         }
 
         return new Response(
