@@ -62,7 +62,7 @@ final class MoneticoService
             ])),
             'contexte_commande' => base64_encode((string) json_encode([
                 'billing' => [
-                    'addressLine1' => $billingAddress->getStreet(),
+                    'address' => $billingAddress->getStreet(),
                     'city' => $billingAddress->getCity(),
                     'postalCode' => $billingAddress->getPostcode(),
                     'country' => $billingAddress->getCountryCode(),
@@ -110,13 +110,26 @@ final class MoneticoService
     {
         return in_array($status, ['remboursement'], true);
     }
+
+    /**
+     * Generate a unique 12 alphanumeric reference for the payment
+     * Random X chars + timestamp + id of the payment
+     *
+     *
+     * @param PaymentInterface $payment
+     * @return string
+     */
     private function generateReference(PaymentInterface $payment): string
     {
-        return strtoupper(sprintf(
-            '%s-%d',
-            substr(md5((string) time()), 0, 8),
-            $payment->getId(),
-        ));
+        $id = sprintf('%d', $payment->getId());
+        $timestamp = base_convert((string) time(), 10, 36);
+        $length = 12 - strlen($id) - strlen($timestamp);
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+        for ($i = 0; $i < $length; $i++) {
+            $randomChars .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+
+        return strtoupper($randomChars.$timestamp.$id);
     }
 
     private function formatAmount(?int $amount): string
