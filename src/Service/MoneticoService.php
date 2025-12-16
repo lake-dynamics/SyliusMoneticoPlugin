@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LakeDynamics\SyliusMoneticoPlugin\Service;
 
+use Sylius\Component\Core\Model\AddressInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 
 final class MoneticoService
@@ -34,6 +35,7 @@ final class MoneticoService
             throw new \RuntimeException('Payment has no order');
         }
 
+        $shippingAddress = $order->getShippingAddress();
         $billingAddress = $order->getBillingAddress();
         if (null === $billingAddress) {
             throw new \RuntimeException('Order has no billing address');
@@ -61,16 +63,12 @@ final class MoneticoService
                 'hash' => $paymentRequestHash,
             ]),
             'contexte_commande' => $this->base64EncodeJson([
-                'billing' => [
-                    'address' => $billingAddress->getStreet(),
-                    'city' => $billingAddress->getCity(),
-                    'postalCode' => $billingAddress->getPostcode(),
-                    'country' => $billingAddress->getCountryCode(),
-                ],
+                'billing' => $this->addressToContext($billingAddress),
+                'shipping' => $shippingAddress ? $this->addressToContext($shippingAddress) : null,
                 'client' => [
-                    'firstName' => $billingAddress->getFirstName(),
-                    'lastName' => $billingAddress->getLastName(),
-                    'email' => $billingAddress->getCustomer()?->getEmailCanonical() ?? $customer->getEmailCanonical(),
+                    'firstName' => mb_substr($billingAddress->getFirstName(), 0, 45) ?? null,
+                    'lastName' => mb_substr($billingAddress->getLastName(), 0, 45) ?? null,
+                    'email' => $billingAddress->getCustomer()?->getEmailCanonical() ?? $customer->getEmailCanonical() ?? null,
                 ],
             ]),
             'mail' => $customer->getEmail(),
@@ -82,6 +80,18 @@ final class MoneticoService
         $fields['MAC'] = $this->sealFields($fields, $gatewayConfig['prod_key']);
 
         return $fields;
+    }
+
+    private function addressToContext(AddressInterface $address): array
+    {
+        return [
+            'addressLine1' => mb_substr($address->getStreet(), 0, 50) ?? null,
+            'addressLine2' => mb_substr($address->getStreet(), 50, 50) ?? null,
+            'addressLine3' => mb_substr($address->getStreet(), 100, 50) ?? null,
+            'city' => mb_substr($address->getCity(), 0, 50) ?? null,
+            'postalCode' => mb_substr($address->getPostcode(), 0, 10) ?? null,
+            'country' => mb_strtoupper(mb_substr($address->getCountryCode(), 0, 2)) ?? null,
+        ];
     }
 
     private function base64EncodeJson(array $data): string
@@ -101,7 +111,7 @@ final class MoneticoService
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $data[$key] = $this->removeNullValues($value);
-            } elseif (null === $value) {
+            } elseif (null === $value || '' === $value) {
                 unset($data[$key]);
             }
         }
