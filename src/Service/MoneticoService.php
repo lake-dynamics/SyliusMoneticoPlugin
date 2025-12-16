@@ -55,12 +55,12 @@ final class MoneticoService
             'lgue' => 'FR',
             'version' => '3.0',
             'date' => gmdate('d/m/Y:H:i:s'),
-            'texte-libre' => base64_encode((string) json_encode([
+            'texte-libre' => $this->base64EncodeJson([
                 'payment_id' => $payment->getId(),
                 'order_id' => $order->getId(),
                 'hash' => $paymentRequestHash,
-            ])),
-            'contexte_commande' => base64_encode((string) json_encode([
+            ]),
+            'contexte_commande' => $this->base64EncodeJson([
                 'billing' => [
                     'address' => $billingAddress->getStreet(),
                     'city' => $billingAddress->getCity(),
@@ -68,11 +68,11 @@ final class MoneticoService
                     'country' => $billingAddress->getCountryCode(),
                 ],
                 'client' => [
-                    'firstName' => $customer->getFirstName(),
-                    'lastName' => $customer->getLastName(),
-                    'email' => $customer->getEmail(),
+                    'firstName' => $billingAddress->getFirstName(),
+                    'lastName' => $billingAddress->getLastName(),
+                    'email' => $billingAddress->getCustomer()?->getEmailCanonical() ?? $customer->getEmailCanonical(),
                 ],
-            ])),
+            ]),
             'mail' => $customer->getEmail(),
             'url_retour_ok' => $successUrl,
             'url_retour_err' => $errorUrl,
@@ -82,6 +82,31 @@ final class MoneticoService
         $fields['MAC'] = $this->sealFields($fields, $gatewayConfig['prod_key']);
 
         return $fields;
+    }
+
+    private function base64EncodeJson(array $data): string
+    {
+        $data = $this->removeNullValues($data);
+        return base64_encode((string) json_encode($data));
+    }
+
+    /**
+     * Remove null values from the array recursively
+     *
+     * @param array $data
+     * @return array
+     */
+    private function removeNullValues(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->removeNullValues($value);
+            } elseif (null === $value) {
+                unset($data[$key]);
+            }
+        }
+
+        return $data;
     }
 
     public function validateNotification(array $data, string $key): bool
