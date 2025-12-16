@@ -66,9 +66,9 @@ final class MoneticoService
                 'billing' => $this->addressToContext($billingAddress),
                 'shipping' => $shippingAddress ? $this->addressToContext($shippingAddress) : null,
                 'client' => [
-                    'firstName' => mb_substr($billingAddress->getFirstName(), 0, 45) ?? null,
-                    'lastName' => mb_substr($billingAddress->getLastName(), 0, 45) ?? null,
-                    'email' => $billingAddress->getCustomer()?->getEmailCanonical() ?? $customer->getEmailCanonical() ?? null,
+                    'firstName' => $this->valueToContext($billingAddress->getFirstName(), 45),
+                    'lastName' => $this->valueToContext($billingAddress->getLastName(), 45),
+                    'email' => $this->valueToContext($billingAddress->getCustomer()?->getEmailCanonical() ?? $customer->getEmailCanonical(), 255),
                 ],
             ]),
             'mail' => $customer->getEmail(),
@@ -82,15 +82,29 @@ final class MoneticoService
         return $fields;
     }
 
+    private function valueToContext(?string $value, $maxLength = 50, $offset = 0): ?string
+    {
+        if (null === $value || '' === $value) {
+            return null;
+        }
+
+        $newValue = mb_substr($value, $offset, $maxLength);
+        if (null === $newValue || '' === $newValue) {
+            return null;
+        }
+
+        return $newValue;
+    }
+
     private function addressToContext(AddressInterface $address): array
     {
         return [
-            'addressLine1' => mb_substr($address->getStreet(), 0, 50) ?? null,
-            'addressLine2' => mb_substr($address->getStreet(), 50, 50) ?? null,
-            'addressLine3' => mb_substr($address->getStreet(), 100, 50) ?? null,
-            'city' => mb_substr($address->getCity(), 0, 50) ?? null,
-            'postalCode' => mb_substr($address->getPostcode(), 0, 10) ?? null,
-            'country' => mb_strtoupper(mb_substr($address->getCountryCode(), 0, 2)) ?? null,
+            'addressLine1' => $this->valueToContext($address->getStreet(), 50),
+            'addressLine2' => $this->valueToContext($address->getStreet(), 50, 50),
+            'addressLine3' => $this->valueToContext($address->getStreet(), 50, 100),
+            'city' => $this->valueToContext($address->getCity(), 50),
+            'postalCode' => $this->valueToContext($address->getPostcode(), 10),
+            'country' => mb_strtoupper($this->valueToContext($address->getCountryCode(), 2)),
         ];
     }
 
