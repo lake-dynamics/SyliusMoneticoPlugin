@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-02-12
+
+### Added
+- Configurable redirect routes for Monetico payment status
+- `failed_payment_redirect_route` (default: `sylius_shop_order_show`) for failed/cancelled payments
+- `success_payment_redirect_route` (default: `sylius_shop_order_thank_you`) for successful payments
+- Unit tests for StatusHttpResponseProvider routing logic
+
+### Changed
+- StatusHttpResponseProvider now redirects based on payment state (completed/authorized vs other)
+
 ## [1.1.4] - 2025-10-16
 
 ### Improved
@@ -85,6 +96,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code quality tools (PHPStan, ECS)
 - Comprehensive documentation and development guides
 
+[1.3.0]: https://github.com/lake-dynamics/SyliusMoneticoPlugin/compare/v1.2.4...v1.3.0
 [1.1.4]: https://github.com/lakedynamics/sylius-monetico-plugin/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/lakedynamics/sylius-monetico-plugin/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/lakedynamics/sylius-monetico-plugin/compare/v1.1.1...v1.1.2
