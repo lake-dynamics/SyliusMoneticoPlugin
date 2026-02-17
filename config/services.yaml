@@ -63,6 +63,9 @@ services:
 
     # Status HTTP Response Provider
     LakeDynamics\SyliusMoneticoPlugin\Provider\StatusHttpResponseProvider:
+        arguments:
+            $failedPaymentRedirectRoute: '%lake_dynamics_sylius_monetico.failed_payment_redirect_route%'
+            $successPaymentRedirectRoute: '%lake_dynamics_sylius_monetico.success_payment_redirect_route%'
         tags:
             - { name: lake_dynamics.sylius_monetico.provider.http_response.monetico, action: !php/const Sylius\Component\Payment\Model\PaymentRequestInterface::ACTION_STATUS }
 

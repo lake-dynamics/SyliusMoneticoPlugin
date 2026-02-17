@@ -16,6 +16,8 @@ final readonly class StatusHttpResponseProvider implements HttpResponseProviderI
 {
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
+        private string $failedPaymentRedirectRoute,
+        private string $successPaymentRedirectRoute,
     ) {
     }
 
@@ -32,15 +34,35 @@ final readonly class StatusHttpResponseProvider implements HttpResponseProviderI
             throw new \RuntimeException('PaymentRequest has no valid payment');
         }
 
-        $order = $payment->getOrder();
-        if (null === $order) {
-            throw new \RuntimeException('Payment has no order');
+        $isSuccessful = in_array(
+            $payment->getState(),
+            [PaymentInterface::STATE_COMPLETED, PaymentInterface::STATE_AUTHORIZED],
+            true,
+        );
+
+        if ($isSuccessful) {
+            $url = $this->urlGenerator->generate(
+                $this->successPaymentRedirectRoute,
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL,
+            );
+
+            return new RedirectResponse($url);
         }
 
-        // Redirect to the order thank you page
+        $routeParameters = [];
+        if ('sylius_shop_order_show' === $this->failedPaymentRedirectRoute) {
+            $order = $payment->getOrder();
+            if (null === $order) {
+                throw new \RuntimeException('Payment has no order');
+            }
+
+            $routeParameters['tokenValue'] = $order->getTokenValue();
+        }
+
         $url = $this->urlGenerator->generate(
-            'sylius_shop_order_thank_you',
-            [],
+            $this->failedPaymentRedirectRoute,
+            $routeParameters,
             UrlGeneratorInterface::ABSOLUTE_URL,
         );
 
