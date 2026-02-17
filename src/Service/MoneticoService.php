@@ -174,6 +174,7 @@ final class MoneticoService
         $timestamp = base_convert((string) time(), 10, 36);
         $length = 12 - strlen($id) - strlen($timestamp);
         $chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+        $randomChars = '';
         for ($i = 0; $i < $length; $i++) {
             $randomChars .= $chars[random_int(0, strlen($chars) - 1)];
         }
