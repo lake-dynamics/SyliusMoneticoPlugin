@@ -17,6 +17,19 @@ final class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('lake_dynamics_sylius_monetico');
         $rootNode = $treeBuilder->getRootNode();
 
+        $rootNode
+            ->children()
+                ->scalarNode('failed_payment_redirect_route')
+                    ->cannotBeEmpty()
+                    ->defaultValue('sylius_shop_order_show')
+                ->end()
+                ->scalarNode('success_payment_redirect_route')
+                    ->cannotBeEmpty()
+                    ->defaultValue('sylius_shop_order_thank_you')
+                ->end()
+            ->end()
+        ;
+
         return $treeBuilder;
     }
 }

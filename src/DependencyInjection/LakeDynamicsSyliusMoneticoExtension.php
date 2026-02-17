@@ -18,6 +18,19 @@ final class LakeDynamicsSyliusMoneticoExtension extends AbstractResourceExtensio
     /** @psalm-suppress UnusedVariable */
     public function load(array $configs, ContainerBuilder $container): void
     {
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
+        $container->setParameter(
+            'lake_dynamics_sylius_monetico.failed_payment_redirect_route',
+            $config['failed_payment_redirect_route'],
+        );
+
+        $container->setParameter(
+            'lake_dynamics_sylius_monetico.success_payment_redirect_route',
+            $config['success_payment_redirect_route'],
+        );
+
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
 
         $loader->load('services.xml');
